@@ -40,11 +40,11 @@ export const Input = React.forwardRef<
 >(({className, type = 'text', name, id, onChange, onBlur,...props}, ref) => {
   switch (type) {
     case "currency":
-      return <OutlinedInput id={id} name={name} type="number" className={className} inputRef={ref} inputProps={{step: "0.01", inputMode: "decimal"}} onChange={onChange} onBlur={onBlur}  />
+      return <OutlinedInput id={id} name={name} type="number" className={className} inputRef={ref} {...props} inputProps={{step: "0.01", inputMode: "decimal"}} onChange={onChange} onBlur={onBlur}  />
     case "email":
-      return <OutlinedInput id={id} name={name} type={type} className={className} inputRef={ref} inputMode={"email"} onChange={onChange} onBlur={onBlur}  />
+      return <OutlinedInput id={id} name={name} type={type}   className={className} inputRef={ref} {...props} inputMode={"email"} onChange={onChange} onBlur={onBlur}  />
     default:
-      return <OutlinedInput id={id} name={name} type={type} className={className} inputRef={ref} onChange={onChange} onBlur={onBlur} />
+      return <OutlinedInput id={id} name={name} type={type}   className={className} inputRef={ref} {...props} onChange={onChange} onBlur={onBlur} />
   }
 });
 
