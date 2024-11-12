@@ -17,26 +17,26 @@ import {
 
 
 export const Field = ({
-  children,
-  ...props
-}: JSX.IntrinsicElements['div']) => {
+                        children,
+                        ...props
+                      }: JSX.IntrinsicElements['div']) => {
   return <FormControl fullWidth {...props} >{children}</FormControl>
 };
 
 export const Label = ({
-  className,
-  children,
-  htmlFor,
-  id,
-}: JSX.IntrinsicElements['label']) => {
+                        className,
+                        children,
+                        htmlFor,
+                        id,
+                      }: JSX.IntrinsicElements['label']) => {
   return (
-    <FormLabel id={id} htmlFor={htmlFor}>{children}</FormLabel>
+      <FormLabel id={id} htmlFor={htmlFor}>{children}</FormLabel>
   )
 }
 
 export const Input = React.forwardRef<
-  HTMLInputElement,
-  JSX.IntrinsicElements['input']
+    HTMLInputElement,
+    JSX.IntrinsicElements['input']
 >(({className, type = 'text', name, id, onChange, onBlur,...props}, ref) => {
   switch (type) {
     case "currency":
@@ -49,30 +49,30 @@ export const Input = React.forwardRef<
 });
 
 export const Checkbox = React.forwardRef<
-  HTMLInputElement,
-  JSX.IntrinsicElements['input']
+    HTMLInputElement,
+    JSX.IntrinsicElements['input']
 >(({ type = 'checkbox', className, ...props }, ref) => (
-<MuiCheckbox className={className} inputRef={ref} inputProps={{...props}} />
+    <MuiCheckbox className={className} inputRef={ref} inputProps={{...props}} />
 ));
 
 export const Select = React.forwardRef<
-  HTMLSelectElement,
-  JSX.IntrinsicElements['select']
+    HTMLSelectElement,
+    JSX.IntrinsicElements['select']
 >(({ className, ...props }, ref) => {
-  
-  return (<MuiSelect 
-    variant='filled' 
-    input={<OutlinedInput />}
-    inputProps={{...props}} 
-    inputRef={ref}
-    className={className}/>)
+
+  return (<MuiSelect
+      variant='filled'
+      input={<OutlinedInput />}
+      inputProps={{...props}}
+      inputRef={ref}
+      className={className}/>)
 });
 
 export const Radio = React.forwardRef<
-  HTMLInputElement,
-  JSX.IntrinsicElements['input']
+    HTMLInputElement,
+    JSX.IntrinsicElements['input']
 >(({ type = 'radio', value, name, checked , id, onChange, onBlur}, ref) => (
-  <MuiRadio inputRef={ref} name={name} value={value} checked={checked} onChange={onChange} onBlur={onBlur} />
+    <MuiRadio inputRef={ref} name={name} value={value} checked={checked} onChange={onChange} onBlur={onBlur} />
 ));
 
 export const RadioGroup = (props: JSX.IntrinsicElements['fieldset']) => {
@@ -81,9 +81,9 @@ export const RadioGroup = (props: JSX.IntrinsicElements['fieldset']) => {
 }
 
 export const Button = ({
-  className,
-  ...props
-}: JSX.IntrinsicElements['button']) => {
+                         className,
+                         ...props
+                       }: JSX.IntrinsicElements['button']) => {
   const formState = useFormState()
   //console.log('button children', children?.toString());
 
@@ -95,12 +95,12 @@ export const Button = ({
   }
 
   return (
-    <MuiButton
-      type='submit'
-      variant='contained'
-      startIcon={startIcon}
-      {...props}
-    />
+      <MuiButton
+          type='submit'
+          variant='contained'
+          startIcon={startIcon}
+          {...props}
+      />
   )
 };
 
