@@ -112,7 +112,7 @@ export const Radio = React.forwardRef<
 export const RadioGroup = ({children, ...props}: JSX.IntrinsicElements['fieldset']) => {
   const field = useField();
   const name = props['aria-labelledby']?.split('-')[2];
-  return <MuiRadioGroup name={name} defaultValue={field.options![0].value}>{children}</MuiRadioGroup>
+  return <MuiRadioGroup name={name} defaultValue={field.value}>{children}</MuiRadioGroup>
 }
 
 export const Button = ({ className, children, disabled, value, onClick }: JSX.IntrinsicElements['button']) => {
@@ -137,7 +137,7 @@ export const Button = ({ className, children, disabled, value, onClick }: JSX.In
 
 export const Error = (props: JSX.IntrinsicElements['div']) => {
   const {children, ...rest} = props;
-  return <div {...rest} >{children}</div>
+  return <div {...rest}>{children}</div>
 }
 
 export const Errors = (props: JSX.IntrinsicElements['div']) => {
