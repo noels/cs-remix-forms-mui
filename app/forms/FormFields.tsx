@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
   FormControl,
   FormLabel,
+  IconButton,
   OutlinedInput,
   Checkbox as MuiCheckbox,
   Select as MuiSelect,
@@ -112,7 +113,7 @@ export const Radio = React.forwardRef<
 export const RadioGroup = ({children, ...props}: JSX.IntrinsicElements['fieldset']) => {
   const field = useField();
   const name = props['aria-labelledby']?.split('-')[2];
-  return <MuiRadioGroup name={name} defaultValue={field.value}>{children}</MuiRadioGroup>
+  return <MuiRadioGroup name={name} defaultValue={field?.value ? field.value  : field.options![0].value}>{children}</MuiRadioGroup>
 }
 
 export const Button = ({ className, children, disabled, value, onClick }: JSX.IntrinsicElements['button']) => {
@@ -122,6 +123,18 @@ export const Button = ({ className, children, disabled, value, onClick }: JSX.In
     startIcon = <AddIcon />
   } else if (className === 'del') {
     startIcon = <DeleteIcon />
+  } else if (className === 'delIcon') {
+    return (
+        <IconButton size='small'
+                    value={value}
+                    type='submit'
+                    onClick={(e) => {
+                      console.log('clicked');
+                    }}
+        >
+          <DeleteIcon/>
+        </IconButton>
+    )
   }
 
   return (
@@ -137,7 +150,7 @@ export const Button = ({ className, children, disabled, value, onClick }: JSX.In
 
 export const Error = (props: JSX.IntrinsicElements['div']) => {
   const {children, ...rest} = props;
-  return <div {...rest}>{children}</div>
+  return <div className={"shibolith"} {...rest} >{children}</div>
 }
 
 export const Errors = (props: JSX.IntrinsicElements['div']) => {

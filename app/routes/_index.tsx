@@ -1,18 +1,16 @@
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import Form from "~/forms/RemixForm";
+import type {LoaderFunctionArgs, MetaFunction} from "@remix-run/node";
 import { z } from "zod";
-import { applySchema } from "composable-functions";
-import { createFormAction } from "remix-forms";
-import { redirect, json } from "@remix-run/node";
+import Page from "~/component/page";
+import {ActionFunctionArgs, json, redirect} from "@remix-run/node";
+import {createFormAction} from "remix-forms";
+import {applySchema} from "composable-functions";
+import {getFromSession, setSession} from "~/data/auth.server";
 
-export const addContraSchema = z.object({
-  accountId: z.coerce.number(),
-  contraAccountId: z.coerce.number().int(),
-  description: z.string().min(3),
-  amount: z.coerce.number().multipleOf(0.01).min(0.01),
-  ledgerId: z.coerce.number().int(),
-  _action: z.string(),
-});
+
+export const loader = async ({request}: LoaderFunctionArgs) => {
+  const txList = await getFromSession('txList', request);
+  return txList;
+}
 
 export const saveLedgerSchema = z.object({
   txDate: z.coerce.date().default(new Date()),
@@ -24,43 +22,75 @@ export const saveLedgerSchema = z.object({
   _action: z.string(),
 });
 
-let buttonAction = "saveLedger";
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.clone().formData();
-  const action = formData.get("_action");
-  if (action === "postLedger") {
-    return createFormAction({ redirect, json })({
-      request,
-      schema: addContraSchema,
-      mutation: addPostMutation,
-      //environment: {request},
-      successPath: `/` /* path to redirect on success */,
-    });
-  } else if (action === "saveLedger") {
-    return createFormAction({ redirect, json })({
-      request,
-      schema: saveLedgerSchema,
-      mutation: saveLedgerMutation,
-      //environment: {request},
-      successPath: "/" /* path to redirect on success */,
-    });
-  }
-  return {};
-};
-
-const addPostMutation = applySchema(addContraSchema)(async (values) => {
+const addPostMutation = applySchema(saveLedgerSchema)(async (values) => {
   console.log("postLedger action called");
   console.log(values);
-  buttonAction = "saveLedger";
-  return {};
+  return {
+    txDate: values.txDate,
+    accountId: values.accountId,
+    ledgerId: values.ledgerId,
+    description: values.description,
+    amount: values.amount,
+    debitCredit: values.debitCredit
+  };
 });
 
 const saveLedgerMutation = applySchema(saveLedgerSchema)(async (values) => {
   console.log("saveLedger action called");
   console.log(values);
-  buttonAction = "postLedger";
-  return {};
+  return {
+    txDate: values.txDate,
+    accountId: values.accountId,
+    ledgerId: values.ledgerId,
+    description: values.description,
+    amount: values.amount,
+    debitCredit: values.debitCredit
+  };
 });
+
+const handleResponse = (accountId: number, request: Request) => (async (ledgerEntries: any, init: number | ResponseInit) => {
+  if (!ledgerEntries.errors) {
+    const txList = await getFromSession('txList', request) ?? [];
+    console.log('handle response!');
+    txList.push(ledgerEntries);
+    return redirect(`/`, {
+      status: 302,
+      headers: await setSession('txList', txList, request),
+    });
+  }
+  return {}
+
+})
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.clone().formData();
+  const action = formData.get("_action");
+  console.log(action);
+  const accountId =  parseInt(formData.get('accountId') as string) ?? 0;
+  if (action === "postLedger") {
+    return createFormAction({ redirect, json: handleResponse(accountId, request)})({
+      request,
+      schema: saveLedgerSchema,
+      mutation: addPostMutation,
+      environment: {request},
+      //successPath: `/` /* path to redirect on success */,
+    });
+  } else if (action === "saveLedger") {
+    return createFormAction({ redirect, json: handleResponse(accountId, request) })({
+      request,
+      schema: saveLedgerSchema,
+      mutation: saveLedgerMutation,
+      environment: {request},
+      //successPath: "/" /* path to redirect on success */,
+    });
+  } else if (action === 'clearTx'){
+    return redirect(`/`, {
+      status: 302,
+      headers: await setSession('txList', [], request),
+    });
+  }
+  return {};
+};
 
 export const meta: MetaFunction = () => {
   return [
@@ -70,28 +100,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  console.log("Rendering form with action: " + buttonAction);
   return (
-    <>
-      <Form
-        schema={saveLedgerSchema}
-        radio={["debitCredit"]}
-        hiddenFields={["accountId", "ledgerId", "_action"]}
-        values={{ accountId: 2, ledgerId: 1, _action: buttonAction }}
-      >
-        {({ Field, Errors, Button }) => (
-          <>
-            <Field name="txDate" />
-            <Field name="description" />
-            <Field name="amount" />
-            <Field name="debitCredit" />
-            <Field name="accountId" />
-            <Field name="ledgerId" />
-            <Field name="_action" />
-            <Button>{buttonAction}</Button>
-          </>
-        )}
-      </Form>
-    </>
+   <Page/>
   );
 }
